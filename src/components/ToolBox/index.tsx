@@ -1,60 +1,85 @@
-import React from 'react'
-import styles from './index.module.css'
-import cx from "classnames"
-import { COLORS, MENU_ITEMS } from '@/constants'
-import { useDispatch, useSelector } from 'react-redux'
-import { changeBrushSize, changeColor } from '@/slice/toolboxslice'
-import { socket } from '@/socket'
-const ToolBox = () => {
-   const dispatch  = useDispatch()
-   const activeMenuItem = useSelector((state) => (state as any).menu?.activeMenuItem)
-   const showStork= activeMenuItem === MENU_ITEMS.PENCIL
-   const showBrush = activeMenuItem === MENU_ITEMS.PENCIL || activeMenuItem === MENU_ITEMS.ERASER
-   const {color,size} = useSelector((state) => (state as any).toolbox[activeMenuItem])
-    const updateBrushSize= (e:any) => {
-      console.log({color})
-      dispatch(changeBrushSize({item:activeMenuItem,size:e.target.value}))
-      socket.emit("changeConfig",{color,size:e.target.value})
-    }
+"use client";
 
-    const updateColor = (newColor:any) => {
-      dispatch(changeColor({item:activeMenuItem,color:newColor}))
-      socket.emit("changeConfig",{color:newColor,size})
-    }
+import { COLORS, MENU_ITEMS } from "@/constants";
+import { cn } from "@/lib/cn";
+import { changeBrushSize, changeColor } from "@/slice/toolboxslice";
+import { socket } from "@/socket";
+import { useAppDispatch, useAppSelector } from "@/store";
+
+const swatches = Object.entries(COLORS) as [keyof typeof COLORS, string][];
+
+export function ToolBox() {
+  const dispatch = useAppDispatch();
+  const activeTool = useAppSelector((s) => s.menu.activeTool);
+  const showStroke = activeTool === MENU_ITEMS.PENCIL;
+  const showBrush =
+    activeTool === MENU_ITEMS.PENCIL || activeTool === MENU_ITEMS.ERASER;
+  const { color, size } = useAppSelector((s) => s.toolbox[activeTool]);
+
+  const updateBrushSize = (next: number) => {
+    dispatch(changeBrushSize({ item: activeTool, size: next }));
+    socket.emit("changeConfig", { color, size: next });
+  };
+
+  const updateColor = (newColor: string) => {
+    dispatch(changeColor({ item: activeTool, color: newColor }));
+    socket.emit("changeConfig", { color: newColor, size });
+  };
+
   return (
-    <div className={styles.toolBoxContainer}>
-      {
-         showStork &&
-         <div className={styles.toolItem}>
-         <h4 className={styles.toolText}>Stroke Color</h4>
-
-          <div className={styles.itemContainer} >
-             <div className={cx(styles.colorBox,{[styles.active]: color=== COLORS.BLACK})}  style={{backgroundColor: COLORS.BLACK}} onClick={()=> updateColor(COLORS.BLACK)}/>
-             <div className={cx(styles.colorBox,{[styles.active]: color=== COLORS.RED})} style={{backgroundColor: COLORS.RED}} onClick={()=> updateColor(COLORS.RED)}/>
-             <div className={cx(styles.colorBox,{[styles.active]: color=== COLORS.GREEN})} style={{backgroundColor: COLORS.GREEN}} onClick={()=> updateColor(COLORS.GREEN)}/>
-             <div className={cx(styles.colorBox,{[styles.active]: color=== COLORS.BLUE})} style={{backgroundColor: COLORS.BLUE}} onClick={()=> updateColor(COLORS.BLUE)}/>
-             <div className={cx(styles.colorBox,{[styles.active]: color=== COLORS.ORANGE})} style={{backgroundColor: COLORS.ORANGE}} onClick={()=> updateColor(COLORS.ORANGE)}/>
-             <div className={cx(styles.colorBox,{[styles.active]: color=== COLORS.YELLOW})} style={{backgroundColor: COLORS.YELLOW}} onClick={()=> updateColor(COLORS.YELLOW)}/>
-             <div className={cx(styles.colorBox,{[styles.active]: color=== COLORS.WHITE})}  style={{backgroundColor: COLORS.WHITE}} onClick={()=> updateColor(COLORS.WHITE)}/>
+    <aside
+      className="fixed left-5 top-[calc(50%-5rem)] z-30 w-64 -translate-y-1/2 rounded-2xl border border-[var(--surface-border)] bg-[var(--surface)] p-4 shadow-[var(--surface-shadow)] backdrop-blur-md max-md:left-3 max-md:top-28 max-md:w-[calc(100%-1.5rem)] max-md:translate-y-0"
+      aria-label="Brush settings"
+    >
+      {showStroke && (
+        <div className="mb-5">
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+            Stroke
+          </h2>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {swatches.map(([name, hex]) => (
+              <button
+                key={name}
+                type="button"
+                title={name}
+                className={cn(
+                  "h-7 w-7 rounded-lg border-2 border-transparent shadow-sm transition",
+                  color === hex &&
+                    "border-zinc-900 ring-2 ring-zinc-900/15 dark:border-zinc-100 dark:ring-zinc-100/25",
+                )}
+                style={{ backgroundColor: hex }}
+                onClick={() => updateColor(hex)}
+              />
+            ))}
           </div>
-      </div>
-      }
-       
-       {
-         showBrush && 
-         <div className={styles.toolItem} >
-         <h4 className={styles.toolText}>Brush Size</h4>
+        </div>
+      )}
 
-          <div className={styles.itemContainer}>
-             <input type="range" min={1} max={10} step={1} onChange={updateBrushSize} />
+      {showBrush && (
+        <div>
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+            {activeTool === MENU_ITEMS.ERASER ? "Eraser size" : "Brush size"}
+          </h2>
+          <div className="mt-3 flex items-center gap-3">
+            <input
+              type="range"
+              min={1}
+              max={activeTool === MENU_ITEMS.ERASER ? 48 : 24}
+              step={1}
+              value={size}
+              className="h-2 w-full cursor-pointer accent-zinc-900 dark:accent-zinc-100"
+              onChange={(e) => updateBrushSize(Number(e.target.value))}
+              aria-valuemin={1}
+              aria-valuemax={activeTool === MENU_ITEMS.ERASER ? 48 : 24}
+              aria-valuenow={size}
+              aria-label="Brush size"
+            />
+            <span className="w-6 tabular-nums text-sm text-zinc-600 dark:text-zinc-300">
+              {size}
+            </span>
           </div>
-      </div>
-       }
-
-      
-
-    </div>
-  )
+        </div>
+      )}
+    </aside>
+  );
 }
-
-export default ToolBox;
