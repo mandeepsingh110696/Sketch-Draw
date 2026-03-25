@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --canvas-paper: #f4f4f5;
+  --surface: rgba(255, 255, 255, 0.82);
+  --surface-border: rgba(24, 24, 27, 0.08);
+  --surface-shadow: 0 20px 50px -24px rgba(0, 0, 0, 0.45);
+  --accent: #18181b;
+  --accent-muted: #52525b;
+  --ring: rgba(24, 24, 27, 0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --canvas-paper: #09090b;
+    --surface: rgba(24, 24, 27, 0.85);
+    --surface-border: rgba(250, 250, 250, 0.08);
+    --surface-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.75);
+    --accent: #fafafa;
+    --accent-muted: #a1a1aa;
+    --ring: rgba(250, 250, 250, 0.12);
+  }
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  @apply antialiased text-zinc-900 dark:text-zinc-50;
+  background: var(--canvas-paper);
+}

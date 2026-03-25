@@ -1,24 +1,35 @@
-import {createSlice} from "@reduxjs/toolkit"
-import { MENU_ITEMS } from "@/constants"
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { MENU_ITEMS, type MenuTool } from "@/constants";
 
-const initialState = {
-   activeMenuItem: MENU_ITEMS.PENCIL,
-   actionMenuItem: null
-}
-//reducers
+export type MenuAction =
+  | typeof MENU_ITEMS.UNDO
+  | typeof MENU_ITEMS.REDO
+  | typeof MENU_ITEMS.DOWNLOAD
+  | typeof MENU_ITEMS.CLEAR
+  | null;
+
+type MenuState = {
+  activeTool: MenuTool;
+  actionMenuItem: MenuAction;
+};
+
+const initialState: MenuState = {
+  activeTool: MENU_ITEMS.PENCIL,
+  actionMenuItem: null,
+};
+
 export const menuSlice = createSlice({
-    name: "menu",
-    initialState,
-    reducers:{
-        menuItemClick:(state,action)=>{
-               state.activeMenuItem = action.payload
-        },
-        actionItemClick:(state,action)=>{
-            state.actionMenuItem = action.payload;
-        }
-    }
-})
+  name: "menu",
+  initialState,
+  reducers: {
+    menuItemClick: (state, action: PayloadAction<MenuTool>) => {
+      state.activeTool = action.payload;
+    },
+    actionItemClick: (state, action: PayloadAction<MenuAction>) => {
+      state.actionMenuItem = action.payload;
+    },
+  },
+});
 
-export const {menuItemClick,actionItemClick} = menuSlice.actions
-
-export default menuSlice.reducer
+export const { menuItemClick, actionItemClick } = menuSlice.actions;
+export default menuSlice.reducer;
