@@ -1,94 +1,139 @@
-# 🎨 Sketch Draw
+# SketchDraw
+
+A browser-based drawing canvas built with **Next.js**, **React**, and the **Canvas 2D API**, with optional **real-time collaboration** through a small **Socket.IO** relay server.
 
 <div align="center">
-  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript" />
-  <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5" />
-  <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3" />
-  <img src="https://img.shields.io/badge/Canvas_API-4A90E2?style=for-the-badge&logo=html5&logoColor=white" alt="Canvas API" />
+
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+
 </div>
 
-<div align="center">
-  <h3>Express your creativity with this intuitive digital canvas</h3>
-  <p>Draw, sketch, doodle, and share your artistic vision with the world</p>
-</div>
+## Features
 
-## ✨ Features
+### Drawing tools
 
-### Creative Tools
-- **Intuitive Drawing Interface**: Natural-feeling brush strokes using the Canvas API
-- **Color Palette**: Choose from a wide spectrum of colors for your artistic expression
-- **Brush Customization**: Adjust brush size and style to match your artistic needs
-- **Layer Support**: Create complex drawings with multiple layers
+- **Pencil** — freehand strokes, color, size, and opacity
+- **Highlighter** — translucent strokes (opacity tuned for markers)
+- **Line** — click/touch and drag to place a straight segment
+- **Rectangle** — drag to place a stroked rectangle
+- **Eraser** — removes ink using the canvas composite mode (`destination-out`)
 
-### User Experience
-- **Undo/Redo**: Freedom to experiment with your creativity without fear of mistakes
-- **Responsive Design**: Create art on any device with a fully responsive interface
-- **Export Options**: Save your masterpieces as PNG, JPG, or SVG files
-- **Share Functionality**: Instantly share your creations on social media or via link
+### Color and brush
 
-## 🖌️ Drawing Tools
+- Preset **swatches** plus a native **color picker**
+- **Recently used colors** (stored in `localStorage`)
+- **Opacity** slider for pencil, highlighter, line, and rectangle tools
 
-| Tool | Description |
-|------|-------------|
-| **Brush** | Free-form drawing with customizable stroke width |
-| **Line** | Create straight lines between points |
-| **Shape** | Draw perfect circles, rectangles, and polygons |
-| **Fill** | Fill areas with solid colors or gradients |
-| **Eraser** | Remove parts of your drawing with precision |
-| **Text** | Add text elements with customizable fonts |
+### Canvas and export
 
-## 🎭 The Canvas Experience
+- Optional **dot grid** behind the artboard (toggle in the sidebar)
+- **Undo / redo** with keyboard shortcuts **⌘Z** / **⌃Z** and **⇧⌘Z** / **⇧⌃Z**
+- **Clear canvas**
+- **Export PNG** — optional **transparent background** (no paper fill) when enabled in the sidebar
 
-Sketch Draw provides an immersive drawing experience that captures the feel of traditional art with the convenience of digital tools. The intuitive interface disappears into the background, letting your creativity take center stage.
+### Real-time collaboration
 
-**Key differentiators:**
-- Ultra-low latency drawing engine for responsive brush strokes
-- Pressure sensitivity support for compatible devices
-- Optimized performance even for complex, multi-layer artwork
-- Streamlined interface that focuses on your creativity, not on learning tools
+- **`server/socket-server.ts`** — relays `beginPath`, `drawLine`, and `changeConfig` only to clients in the same **room** (run via `pnpm socket` using `tsx`)
+- **Room** is chosen via the URL: `?room=<id>`. If omitted, clients join the default room **`public`**
+- **Collab bar** (bottom): connection status, approximate **peer count** for the room, **copy link**, and **new room** (reloads with a fresh `?room=` so the socket reconnects in that room)
+- Remote strokes carry **tool, color, size, and opacity** so other participants see the correct appearance, not your local tool settings
 
-## 🚀 Getting Started
+Collaboration is **best-effort**: anyone with the room URL can draw; there is **no built-in account authentication**. Undo/clear are **local** unless you extend the protocol.
 
-### Live Demo
-Experience Sketch Draw right now at [our live demo](https://mandeepsingh110696.github.io/Sketch-Draw)!
+## Tool reference
 
-### Local Installation
+| Tool          | Description                                              |
+| ------------- | -------------------------------------------------------- |
+| Pencil        | Freehand drawing; color, size, opacity                   |
+| Highlighter   | Semi-transparent freehand strokes                      |
+| Line          | Straight segment from press to release                   |
+| Rectangle     | Stroked axis-aligned rectangle from drag               |
+| Eraser        | Erases ink by destination-out composite                  |
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/mandeepsingh110696/Sketch-Draw.git
-   cd Sketch-Draw
-   ```
+## Getting started
 
-2. Simply open `index.html` in your browser to start drawing!
+### Prerequisites
 
-3. For development with live reload:
-   ```bash
-   # If you have Python installed
-   python -m http.server
-   
-   # Or with Node.js
-   npx serve
-   ```
+- **Node.js** (LTS recommended)
+- **pnpm** (`corepack enable` or install from [pnpm.io](https://pnpm.io))
 
+### Install
 
-## 🔮 Future Enhancements
+```bash
+pnpm install
+```
 
-The canvas of possibilities is still expanding:
+### Run the web app
 
-- Collaborative drawing rooms for real-time artistic collaboration
-- Advanced filters and effects library
-- Animation timeline for creating simple animations
-- Custom brush creation tool
-- Cloud storage integration for your art portfolio
+```bash
+pnpm dev
+```
 
-## 💻 Technical Implementation
+Open the URL shown in the terminal (usually `http://localhost:3000`).
 
-Sketch Draw leverages the power of the native Canvas API in JavaScript to create a responsive and performant drawing experience:
+### Run real-time relay (optional)
 
-- Custom event handlers for mouse and touch input
-- Optimized rendering pipeline for smooth drawing even with complex artwork
-- State management system for undo/redo functionality
-- Custom algorithms for line smoothing and shape recognition
+In a **second** terminal:
 
-Connect with me on [LinkedIn](https://linkedin.com/in/mandeep-singh-23b964122) or explore my other projects on [GitHub](https://github.com/mandeepsingh110696).
+```bash
+pnpm socket
+```
+
+By default the relay listens on **port 8500** (override with `PORT`).
+
+With **`pnpm dev`** + **`pnpm socket`**, the client connects to `http://localhost:8500` when `NEXT_PUBLIC_SOCKET_URL` is unset in development.
+
+## Scripts
+
+| Command        | Description                                         |
+| -------------- | --------------------------------------------------- |
+| `pnpm dev`     | Next.js development server                          |
+| `pnpm build`   | Production build                                    |
+| `pnpm start`   | Start production Next.js server (after `build`)     |
+| `pnpm socket`  | Start Socket.IO relay (`server/socket-server.ts` via `tsx`) |
+| `pnpm lint`    | Run Biome check                                     |
+| `pnpm lint:fix`| Biome check with auto-fix where possible             |
+
+## Environment variables
+
+| Variable                    | Purpose                                                                 |
+| --------------------------- | ----------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SOCKET_URL`    | Public **https** base URL of the Socket.IO relay (no trailing slash). Browsers need this in production when the relay is **not** on the same hostname as the app. If unset in production, the client falls back to the **current page origin** (only works if something on that host proxies `/socket.io` to your relay). |
+| `PORT`                      | Only for running **`pnpm socket`** locally or on your relay host (default **8500**). Not something you set for the Next.js app on Vercel. |
+
+### Vercel
+
+In **Settings → Environment Variables**, add **`NEXT_PUBLIC_SOCKET_URL`** with whatever public HTTPS URL your relay actually uses (where you deployed `server/socket-server.ts`). Enable it for Production; add it to Preview deployments too if you use those and the relay is fine talking to preview URLs.
+
+These values are baked in at **build time**, so redeploy after you change them.
+
+Collaboration needs that relay on a normal always-on Node host (Railway, Fly, a VPS, etc.)—not inside this Vercel project. Without `NEXT_PUBLIC_SOCKET_URL`, the client assumes the socket lives on the same host as the site, which usually isn’t true, so realtime drawing won’t connect unless you’ve wired up a proxy yourself.
+
+No other env vars are required for the canvas, export, or UI.
+
+## Production notes
+
+1. **Deploy two pieces**: the **Next.js** app and the **socket relay**, unless you put both behind one hostname and proxy WebSocket traffic to the relay.
+2. Set **`NEXT_PUBLIC_SOCKET_URL`** to the relay’s HTTPS URL, then **rebuild** the frontend so the browser knows where to connect.
+3. The relay uses permissive CORS (`origin: true`) for flexibility; you may want to **restrict `origin`** to your real site in production.
+4. **Peer count** is “connections in this room,” not unique logged-in users (multiple tabs count separately).
+
+## Technical overview
+
+- **Rendering**: single full-viewport `<canvas>` with device pixel ratio scaling; history stacks **full-canvas `ImageData`** snapshots for undo/redo
+- **State**: Redux Toolkit (`menu`, `toolbox`, `preferences`)
+- **Input**: Pointer Events API for mouse and touch
+- **Lint / format**: [Biome](https://biomejs.dev/)
+
+## Possible next steps
+
+- Vector or stroke-list history for lighter undo on large canvases
+- Server-side or CRDT-based sync for undo/clear/shared state
+- Auth and private rooms
+
+---
+
+SketchDraw began as a bare-bones drawing page. It’s now a Next.js app with a proper tool palette and optional realtime rooms so more than one person can sketch at once.

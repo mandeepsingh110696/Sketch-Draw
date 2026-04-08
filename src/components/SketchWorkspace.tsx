@@ -1,6 +1,7 @@
 "use client";
 
 import { Board } from "@/components/Board";
+import { CollabBar } from "@/components/CollabBar";
 import { MenuBar } from "@/components/MenuBar";
 import { ToolBox } from "@/components/ToolBox";
 
@@ -13,13 +14,14 @@ export function SketchWorkspace() {
             SketchDraw
           </p>
           <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
-            Pencil · eraser · undo · export
+            Shapes · highlighter · rooms · export
           </p>
         </div>
       </header>
       <MenuBar />
       <ToolBox />
       <Board />
+      <CollabBar />
     </div>
   );
 }

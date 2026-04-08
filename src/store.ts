@@ -5,12 +5,14 @@ import {
   useSelector,
 } from "react-redux";
 import menuReducer from "@/slice/menuSlice";
+import preferencesReducer from "@/slice/preferencesSlice";
 import toolboxReducer from "@/slice/toolboxslice";
 
 export const store = configureStore({
   reducer: {
     menu: menuReducer,
     toolbox: toolboxReducer,
+    preferences: preferencesReducer,
   },
 });
 
